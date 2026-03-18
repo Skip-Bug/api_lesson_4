@@ -1,9 +1,11 @@
 import requests
+import os
 
 
 def main():
-
+    folder_name = 'images'
     filename = 'hubble.jpeg'
+    full_name = os.path.join(folder_name, filename)
     url = "https://upload.wikimedia.org/wikipedia/commons/3/3f/HST-SM4.jpeg"
 
     headers = {
@@ -16,7 +18,10 @@ def main():
     response = requests.get(url, headers=headers)
     response.raise_for_status()
 
-    with open(f"images/{filename}", 'wb') as file:
+    if not os.path.exists(folder_name):
+        os.makedirs(folder_name)
+
+    with open(f"{full_name}", 'wb') as file:
         file.write(response.content)
 
 
