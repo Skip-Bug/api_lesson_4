@@ -1,5 +1,35 @@
+from dotenv import load_dotenv
 from pathlib import Path
 import requests
+import os
+
+
+def getting_extension(links_photo)
+
+
+"""Функция для получения расширения картинки"""
+
+return
+
+
+def get_links_nasa(api_key=None):
+    """Получает список ссылок с NASA-API .
+
+    Возвращает список ссылок на изображение дня
+    если их нет то возвращает пустой список.
+    Args:
+        api_key: ID для работы с API
+        например: DEMO_KEY.
+    """
+    if api_key is None:
+        api_key = "DEMO_KEY"
+
+    url = f"https://api.nasa.gov/planetary/apod?api_key={api_key}"
+    response = requests.get(url)
+    response.raise_for_status()
+
+    some_links = response.json()
+    return some_links.get('hdurl') or some_links.get('url')
 
 
 def get_links_spacex(id):
@@ -13,21 +43,34 @@ def get_links_spacex(id):
     url = f"https://api.spacexdata.com/v5/launches/{id}"
     response = requests.get(url)
     response.raise_for_status()
-    links_foto = response.json().get('links', {}).get(
+
+    some_links = response.json().get('links', {}).get(
         'flickr', {}).get('original', [])
-    return links_foto
+
+    return some_links
 
 
-def download_image(url, name_foto, path, number_link=None,  headers=None):
+def ensure_list(some_links):
+    """Приводит значение к списку для универсальной итерации."""
+    if isinstance(some_links, list):
+        return some_links
+    if some_links:
+        return [some_links]
+    return []
+
+
+def download_image(url, name_photo, path, number_photo=None,  headers=None):
     """Сохраняет картинку по URL в указанную папку.
 
     Возвращает путь к сохранённому файлу.
 
     Args:
         url: Адрес картинки в интернете.
-        name_foto: Название фото.
+        name_photo: Название фото.
         path: Папка для сохранения (будет создана, если нет).
-        number_link: Номер (индекс) ссылки.
+        number_photo: Номер фото для сохранения
+            (если фото одно то сохранится по названию если,
+             их несколько то название_1 и т.д.).
         headers: Заголовки HTTP (если None, используется стандартный User-Agent).
     """
     if headers is None:
@@ -40,10 +83,10 @@ def download_image(url, name_foto, path, number_link=None,  headers=None):
         }
     folder_path = Path(path)
     folder_path.mkdir(parents=True, exist_ok=True)
-    if number_link is None:
-        full_path = folder_path / f"{name_foto}.jpeg"
+    if number_photo is None:
+        full_path = folder_path / f"{name_photo}.jpeg"
     else:
-        full_path = folder_path / f"{name_foto}_{number_link}.jpeg"
+        full_path = folder_path / f"{name_photo}_{number_photo}.jpeg"
 
     response = requests.get(url, headers=headers)
     response.raise_for_status()
@@ -53,12 +96,18 @@ def download_image(url, name_foto, path, number_link=None,  headers=None):
 
 def main():
     """Запускает работу с API и сохраняет фото."""
-    name_foto = input("Введите название фото:").strip().lower()
-    spacex_id = '5eb87d42ffd86e000604b384'
-    path = (input("Введите путь: ").strip()
-            or 'images/')
+
+    load_dotenv()
+    name_photo = input("Введите название фото:").strip().lower()
+    # spacex_id = '5eb87d42ffd86e000604b384'
+    path = input("Введите путь: ").strip() or 'images/'
+    api_key = os.getenv('NASA_ID')
+
     try:
-        links_foto = get_links_spacex(id=spacex_id)
+        some_links = get_links_nasa(api_key)
+        links_photo = ensure_list(some_links)
+        # some_links = get_links_spacex(id=spacex_id)
+        # links_photo = ensure_list(some_links)
     except requests.exceptions.ReadTimeout:
         print("Превышено время ожидания...")
         return
@@ -71,16 +120,13 @@ def main():
         print(error, "ERROR_2")
         return
 
-    if not links_foto:
+    if not links_photo:
         print("Фотографии не найдены.")
         return
-    if len(links_foto) == 1:
-        saved_path = download_image(links_foto[0], name_foto, path)
+    for number_links, link in enumerate(links_photo, start=1):
+        number_photo = number_links if len(links_photo) > 1 else None
+        saved_path = download_image(link, name_photo, path, number_photo)
         print(f"Файл сохранён: {saved_path}")
-    else:
-        for number, link in enumerate(links_foto, start=1):
-            saved_path = download_image(link, name_foto, path, number)
-            print(f"Файл сохранён: {saved_path}")
 
 
 if __name__ == '__main__':
