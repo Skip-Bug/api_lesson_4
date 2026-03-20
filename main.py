@@ -13,7 +13,7 @@ def getting_extension(url):
         url (str): Адрес картинки в интернете.
 
     Returns:
-        (str): Расширение файла (jpeg, gif и т.д.).
+        str: Расширение файла (jpeg, gif и т.д.).
     """
     path, filename = split(unquote(urlsplit(url).path))
     name_photo, extension = splitext(filename)
@@ -122,13 +122,13 @@ def download_image(url, name_photo, path, number_photo=None, headers=None):
     Возвращает путь к сохранённому файлу.
 
     Args:
-        url(str): Адрес картинки в интернете.
-        name_photo(str): Название фото.
-        path(str): Папка для сохранения (будет создана, если нет).
-        number_photo(int, optional): Номер фото для сохранения
+        url (str): Адрес картинки в интернете.
+        name_photo (str): Название фото.
+        path (str): Папка для сохранения (будет создана, если нет).
+        number_photo (int, optional): Номер фото для сохранения
             (если фото одно то сохранится по названию если,
              их несколько то название_1 и т.д.).
-        headers(dict, optional): Заголовки HTTP (если None,
+        headers (dict, optional): Заголовки HTTP (если None,
          используется стандартный User-Agent).
 
     Returns:
