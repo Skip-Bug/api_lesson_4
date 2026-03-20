@@ -1,46 +1,91 @@
 from dotenv import load_dotenv
 from pathlib import Path
+from urllib.parse import urlsplit, unquote
+from os.path import split, splitext
 import requests
 import os
+from pprint import pprint
 
 
-def getting_extension(links_photo)
+def getting_extension(url):
+    """Берет из ссылок расширение... 
 
-
-"""Функция для получения расширения картинки"""
-
-return
-
-
-def get_links_nasa(api_key=None):
-    """Получает список ссылок с NASA-API .
-
-    Возвращает список ссылок на изображение дня
-    если их нет то возвращает пустой список.
     Args:
-        api_key: ID для работы с API
-        например: DEMO_KEY.
+        url (str): Адрес картинки в интернете.
+
+    Returns:
+        (str): Расширение файла (jpeg, gif и т.д.).
+    """
+    path, filename = split(unquote(urlsplit(url).path))
+    name_photo, extension = splitext(filename)
+    return extension
+
+
+def get_links_nasa(api_key=None, count=None, date=None, hd=False):
+    """Получает список ссылок на изображения с NASA APOD API.
+
+    Args:
+        api_key (str, optional): API-ключ NASA. По умолчанию "DEMO_KEY".
+        count (int, optional): Количество случайных изображений (1–100).
+            Если указан, возвращает список случайных фото.
+        date (str, optional): Дата в формате YYYY-MM-DD.
+            Нельзя использовать вместе с count.
+        hd (bool, optional): Если True, предпочитает HD-версию hdurl,
+            но использует url как запасной вариант.
+
+    Returns:
+        list: Список строк с URL изображений.
+            Может быть пустым, если ссылки не найдены.
     """
     if api_key is None:
         api_key = "DEMO_KEY"
 
-    url = f"https://api.nasa.gov/planetary/apod?api_key={api_key}"
-    response = requests.get(url)
+    params = {'api_key': api_key}
+    if count is not None:
+        params['count'] = count
+    if date is not None:
+        params['date'] = date
+    if hd:
+        params['hd'] = True
+
+    base_url = "https://api.nasa.gov/planetary/apod"
+    response = requests.get(base_url, params=params)
     response.raise_for_status()
 
-    some_links = response.json()
-    return some_links.get('hdurl') or some_links.get('url')
+    apod_response = response.json()
+    pprint(apod_response)
+    if isinstance(apod_response, dict):
+        apod_links = [apod_response]
+    else:
+        apod_links = apod_response
+
+    some_links = []
+    for apod_link in apod_links:
+        if hd:
+            some_link = apod_link.get('hdurl') or apod_link.get('url')
+        else:
+            some_link = apod_link.get('url')
+
+        if some_link:
+            some_links.append(some_link)
+
+    return some_links
 
 
-def get_links_spacex(id):
-    """Получает список ссылок с SpaceX-API .
+def get_links_spacex(spacex_id):
+    """Получает список ссылок с SpaceX-API.
 
     Возвращает список ссылок на оригинальные фотографии запуска
     если их нет то возвращает пустой список.
+
     Args:
-        id: ID запуска например: 5eb87d47ffd86e000604b38a.
+        spacex_id (str): ID запуска, например: 5eb87d47ffd86e000604b38a.
+
+    Returns:
+        list: Список строк с URL изображений.
     """
-    url = f"https://api.spacexdata.com/v5/launches/{id}"
+    url = f"https://api.spacexdata.com/v5/launches/{spacex_id}"
+
     response = requests.get(url)
     response.raise_for_status()
 
@@ -51,47 +96,62 @@ def get_links_spacex(id):
 
 
 def ensure_list(some_links):
-    """Приводит значение к списку для универсальной итерации."""
-    if isinstance(some_links, list):
-        return some_links
-    if some_links:
-        return [some_links]
-    return []
+    """Приводит значение к списку для универсальной итерации.
 
-
-def download_image(url, name_photo, path, number_photo=None,  headers=None):
-    """Сохраняет картинку по URL в указанную папку.
-
-    Возвращает путь к сохранённому файлу.
+    Делает из любого количества ссылок полученных от запроса - список
 
     Args:
-        url: Адрес картинки в интернете.
-        name_photo: Название фото.
-        path: Папка для сохранения (будет создана, если нет).
-        number_photo: Номер фото для сохранения
-            (если фото одно то сохранится по названию если,
-             их несколько то название_1 и т.д.).
-        headers: Заголовки HTTP (если None, используется стандартный User-Agent).
-    """
-    if headers is None:
-        headers = {
-            'User-Agent': (
-                'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
-                'AppleWebKit/537.36 (KHTML, like Gecko) '
-                'Chrome/145.0.0.0 Safari/537.36'
-            )
-        }
-    folder_path = Path(path)
-    folder_path.mkdir(parents=True, exist_ok=True)
-    if number_photo is None:
-        full_path = folder_path / f"{name_photo}.jpeg"
-    else:
-        full_path = folder_path / f"{name_photo}_{number_photo}.jpeg"
+        some_links: Необработанные ответы от других функций.
 
-    response = requests.get(url, headers=headers)
-    response.raise_for_status()
-    full_path.write_bytes(response.content)
-    return full_path
+    Returns:
+        list: Список ссылок даже если там одна ссылка,
+        или пустой список.
+    """
+    if some_links is None:
+        return []
+    if isinstance(some_links, list):
+        return some_links
+    return [some_links]
+
+
+# def download_image(url, name_photo, path, number_photo=None, headers=None):
+#     """Сохраняет картинку по URL в указанную папку.
+
+#     Возвращает путь к сохранённому файлу.
+
+#     Args:
+#         url(str): Адрес картинки в интернете.
+#         name_photo(str): Название фото.
+#         path(str): Папка для сохранения (будет создана, если нет).
+#         number_photo(int, optional): Номер фото для сохранения
+#             (если фото одно то сохранится по названию если,
+#              их несколько то название_1 и т.д.).
+#         headers(dict, optional): Заголовки HTTP (если None,
+#          используется стандартный User-Agent).
+
+#     Returns:
+#         Path: Путь к сохраненному файлу.
+#     """
+#     if headers is None:
+#         headers = {
+#             'User-Agent': (
+#                 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
+#                 'AppleWebKit/537.36 (KHTML, like Gecko) '
+#                 'Chrome/145.0.0.0 Safari/537.36'
+#             )
+#         }
+#     folder_path = Path(path)
+#     folder_path.mkdir(parents=True, exist_ok=True)
+#     extension = getting_extension(url)
+#     if number_photo is None:
+#         full_path = folder_path / f"{name_photo}{extension}"
+#     else:
+#         full_path = folder_path / f"{name_photo}_{number_photo}{extension}"
+
+#     response = requests.get(url, headers=headers)
+#     response.raise_for_status()
+#     full_path.write_bytes(response.content)
+#     return full_path
 
 
 def main():
@@ -99,14 +159,14 @@ def main():
 
     load_dotenv()
     name_photo = input("Введите название фото:").strip().lower()
-    # spacex_id = '5eb87d42ffd86e000604b384'
-    path = input("Введите путь: ").strip() or 'images/'
+    # spacex_id = os.getenv('SPACEX_ID')
     api_key = os.getenv('NASA_ID')
 
+    path = input("Введите путь: ").strip() or 'images/'
     try:
-        some_links = get_links_nasa(api_key)
+        some_links = get_links_nasa(api_key, count=30)
         links_photo = ensure_list(some_links)
-        # some_links = get_links_spacex(id=spacex_id)
+        # some_links = get_links_spacex(spacex_id)
         # links_photo = ensure_list(some_links)
     except requests.exceptions.ReadTimeout:
         print("Превышено время ожидания...")
