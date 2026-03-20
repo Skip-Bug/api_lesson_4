@@ -4,7 +4,6 @@ from urllib.parse import urlsplit, unquote
 from os.path import split, splitext
 import requests
 import os
-from pprint import pprint
 
 
 def getting_extension(url):
@@ -53,7 +52,7 @@ def get_links_nasa(api_key=None, count=None, date=None, hd=False):
     response.raise_for_status()
 
     apod_response = response.json()
-    pprint(apod_response)
+
     if isinstance(apod_response, dict):
         apod_links = [apod_response]
     else:
@@ -61,6 +60,9 @@ def get_links_nasa(api_key=None, count=None, date=None, hd=False):
 
     some_links = []
     for apod_link in apod_links:
+        if apod_link.get('media_type') != 'image':
+            continue
+
         if hd:
             some_link = apod_link.get('hdurl') or apod_link.get('url')
         else:
@@ -114,44 +116,44 @@ def ensure_list(some_links):
     return [some_links]
 
 
-# def download_image(url, name_photo, path, number_photo=None, headers=None):
-#     """Сохраняет картинку по URL в указанную папку.
+def download_image(url, name_photo, path, number_photo=None, headers=None):
+    """Сохраняет картинку по URL в указанную папку.
 
-#     Возвращает путь к сохранённому файлу.
+    Возвращает путь к сохранённому файлу.
 
-#     Args:
-#         url(str): Адрес картинки в интернете.
-#         name_photo(str): Название фото.
-#         path(str): Папка для сохранения (будет создана, если нет).
-#         number_photo(int, optional): Номер фото для сохранения
-#             (если фото одно то сохранится по названию если,
-#              их несколько то название_1 и т.д.).
-#         headers(dict, optional): Заголовки HTTP (если None,
-#          используется стандартный User-Agent).
+    Args:
+        url(str): Адрес картинки в интернете.
+        name_photo(str): Название фото.
+        path(str): Папка для сохранения (будет создана, если нет).
+        number_photo(int, optional): Номер фото для сохранения
+            (если фото одно то сохранится по названию если,
+             их несколько то название_1 и т.д.).
+        headers(dict, optional): Заголовки HTTP (если None,
+         используется стандартный User-Agent).
 
-#     Returns:
-#         Path: Путь к сохраненному файлу.
-#     """
-#     if headers is None:
-#         headers = {
-#             'User-Agent': (
-#                 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
-#                 'AppleWebKit/537.36 (KHTML, like Gecko) '
-#                 'Chrome/145.0.0.0 Safari/537.36'
-#             )
-#         }
-#     folder_path = Path(path)
-#     folder_path.mkdir(parents=True, exist_ok=True)
-#     extension = getting_extension(url)
-#     if number_photo is None:
-#         full_path = folder_path / f"{name_photo}{extension}"
-#     else:
-#         full_path = folder_path / f"{name_photo}_{number_photo}{extension}"
+    Returns:
+        Path: Путь к сохраненному файлу.
+    """
+    if headers is None:
+        headers = {
+            'User-Agent': (
+                'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
+                'AppleWebKit/537.36 (KHTML, like Gecko) '
+                'Chrome/145.0.0.0 Safari/537.36'
+            )
+        }
+    folder_path = Path(path)
+    folder_path.mkdir(parents=True, exist_ok=True)
+    extension = getting_extension(url)
+    if number_photo is None:
+        full_path = folder_path / f"{name_photo}{extension}"
+    else:
+        full_path = folder_path / f"{name_photo}_{number_photo}{extension}"
 
-#     response = requests.get(url, headers=headers)
-#     response.raise_for_status()
-#     full_path.write_bytes(response.content)
-#     return full_path
+    response = requests.get(url, headers=headers)
+    response.raise_for_status()
+    full_path.write_bytes(response.content)
+    return full_path
 
 
 def main():
@@ -183,7 +185,7 @@ def main():
     if not links_photo:
         print("Фотографии не найдены.")
         return
-    for number_links, link in enumerate(links_photo, start=1):
+    for number_links, link in enumerate(links_photo, start=0):
         number_photo = number_links if len(links_photo) > 1 else None
         saved_path = download_image(link, name_photo, path, number_photo)
         print(f"Файл сохранён: {saved_path}")
