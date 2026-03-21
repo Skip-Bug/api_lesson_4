@@ -6,7 +6,7 @@ import requests
 import os
 
 
-def getting_extension(url):
+def get_extension(url):
     """Берет из ссылок расширение... 
 
     Args:
@@ -144,7 +144,7 @@ def download_image(url, name_photo, path, number_photo=None, headers=None):
         }
     folder_path = Path(path)
     folder_path.mkdir(parents=True, exist_ok=True)
-    extension = getting_extension(url)
+    extension = get_extension(url)
     if number_photo is None:
         full_path = folder_path / f"{name_photo}{extension}"
     else:
