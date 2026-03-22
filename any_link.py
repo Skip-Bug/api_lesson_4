@@ -85,8 +85,8 @@ def main():
         if not url.startswith(('http://', 'https://')):
             print(f"Ссылка '{url}' должна начинаться с http:// или https://")
             return
-    name_photo = input("Введите название фото:").strip().lower()
-    path = input("Введите путь или Enter:  ").strip() or 'images/'
+    name_photo = input("Введите название фото: ").strip().lower()
+    path = input("Введите путь или Enter: ").strip() or 'images/'
 
     try:
         links_photo = ensure_list(some_links)
