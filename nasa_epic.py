@@ -57,8 +57,8 @@ def main():
             print("Неверный формат даты. Нужно YYYY-MM-DD.")
             return
     api_key = None  # os.getenv('NASA_ID')
-    name_photo = input("Введите название фото:").strip().lower()
-    path = input("Введите путь или Enter:  ").strip() or 'images/'
+    name_photo = input("Введите название фото: ").strip().lower()
+    path = input("Введите путь или Enter: ").strip() or 'images/'
     try:
         some_links = get_links_nasa_epic(api_key, date)
         links_photo = ensure_list(some_links)
