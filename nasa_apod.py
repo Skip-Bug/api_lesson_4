@@ -1,4 +1,4 @@
-from any_link.py import ensure_list, download_image
+from any_link import ensure_list, download_image
 from dotenv import load_dotenv
 from datetime import datetime
 import requests
@@ -60,32 +60,50 @@ def get_links_nasa_apod(api_key=None, count=None, date=None, hd=False):
 
 
 def main():
-        """Запускает работу с API и сохраняет фото."""
+    """Запускает работу с API и сохраняет фото."""
+
     load_dotenv()
-        data_input = input("Введите дату (YYYY-MM-DD) или Enter: ").strip()
-    if not data_input:
-        date = None
-    else:
+    count_input = input("Введите количество (1-100) или Enter: ").strip()
+    if count_input:
         try:
-            date = datetime.strptime(
-                data_input, "%Y-%m-%d").strftime("%Y-%m-%d")
+            count = int(count_input)
+            if not (1 <= count <= 100):
+                print("Количество должно быть от 1 до 100.")
+                return
+            date = None
         except ValueError:
-            print("Неверный формат даты. Нужно YYYY-MM-DD.")
+            print("Неверное число.")
             return
-    api_key = None  # os.getenv('NASA_ID')
-    name_photo = input("Введите название фото:").strip().lower()
-    path = input("Введите путь или Enter:  ").strip() or 'images/'
+    else:
+        count = None
+        date_input = input("Введите дату (YYYY-MM-DD) или Enter: ").strip()
+        if date_input:
+            try:
+                date = datetime.strptime(
+                    date_input, "%Y-%m-%d").strftime("%Y-%m-%d")
+            except ValueError:
+                print("Неверный формат даты. Нужно YYYY-MM-DD.")
+                return
+        else:
+            date = None
+
+    hd_input = input("HD-версия? (y/n): ").strip().lower()
+    hd = hd_input == 'y'
+
+    api_key = os.getenv('NASA_ID')
+
+    name_photo = input("Введите название фото: ").strip().lower()
+    path = input("Введите путь или Enter: ").strip() or 'images/'
+
     try:
-        some_links = get_links_nasa_apod(api_key, date)
+        some_links = get_links_nasa_apod(api_key, count, date, hd)
         links_photo = ensure_list(some_links)
     except requests.exceptions.ReadTimeout:
         print("Превышено время ожидания...")
         return
-
     except requests.exceptions.ConnectionError as error:
         print(error, "Ошибка соединения")
         return
-
     except Exception as error:
         print(error, "ERROR_2")
         return
@@ -93,9 +111,10 @@ def main():
     if not links_photo:
         print("Фотографии не найдены.")
         return
-    for number_links, link in enumerate(links_photo, start=0):
-        number_photo = number_links if len(links_photo) > 1 else None
-        saved_path = download_image(link, name_photo, path, number_photo)
+
+    for i, link in enumerate(links_photo, start=1):
+        number = i if len(links_photo) > 1 else None
+        saved_path = download_image(link, name_photo, path, number)
         print(f"Файл сохранён: {saved_path}")
 
 
