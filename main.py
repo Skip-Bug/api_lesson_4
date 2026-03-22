@@ -3,6 +3,7 @@ from pathlib import Path
 from urllib.parse import urlsplit, unquote
 from os.path import split, splitext
 import requests
+from datetime import datetime
 import os
 from pprint import pprint
 
@@ -203,12 +204,22 @@ def ensure_list(some_links):
 def main():
     """Запускает работу с API и сохраняет фото."""
 
-    load_dotenv()
+    data_input = input("Введите дату (YYYY-MM-DD) или Enter: ").strip()
+    if not data_input:
+        date = None
+    else:
+        try:
+            date = datetime.strptime(
+                data_input, "%Y-%m-%d").strftime("%Y-%m-%d")
+        except ValueError:
+            print("Неверный формат даты. Нужно YYYY-MM-DD.")
+            return
+
     name_photo = input("Введите название фото:").strip().lower()
     # spacex_id = os.getenv('SPACEX_ID')
     api_key = None  # os.getenv('NASA_ID')
 
-    path = input("Введите путь: ").strip() or 'images/'
+    path = input("Введите путь или Enter:  ").strip() or 'images/'
     try:
 
         some_links = get_links_nasa_epic(api_key)
