@@ -1,5 +1,6 @@
 from any_link import ensure_list, download_image
 import requests
+import argparse
 
 
 def get_links_spacex(spacex_id=None):
@@ -27,14 +28,27 @@ def get_links_spacex(spacex_id=None):
     return some_links
 
 
+def create_parser():
+    parser = argparse.ArgumentParser(
+        description='Запускает работу с SpaceX-API и сохраняет фото'
+    )
+    parser.add_argument('spacex_id',
+                        nargs='?',
+                        default='latest',
+                        help='ID запуска (по умолчанию последний)'
+                        )
+    return parser
+
+
 def main():
     """Запускает работу с API и сохраняет фото."""
+    parser = create_parser()
+    args = parser.parse_args()
 
-    spacex_id = input("Введите ID нужного запуска или Enter: ").strip()
-    name_photo = input("Введите название фото:").strip().lower()
-    path = input("Введите путь или Enter:  ").strip() or 'images/'
+    name_photo = input("Введите название фото: ").strip().lower()
+    path = input("Введите путь или Enter: ").strip() or 'images/'
     try:
-        some_links = get_links_spacex(spacex_id)
+        some_links = get_links_spacex(args.spacex_id)
         links_photo = ensure_list(some_links)
     except requests.exceptions.ReadTimeout:
         print("Превышено время ожидания...")
