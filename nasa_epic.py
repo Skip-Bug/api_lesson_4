@@ -29,12 +29,7 @@ def get_links_nasa_epic(api_key=None, date=None):
     response = requests.get(base_url, params=params)
     response.raise_for_status()
     epic_response = response.json()
-    # отладка
-    print(f"Найдено записей: {len(epic_response)}")
-    if epic_response:
-        print("Первый элемент:")
-        pprint(epic_response[0])
-    # отладка не забудь удалить
+
     some_links = []
     base_photo_url = "https://api.nasa.gov/EPIC/archive/natural/"
     for epic_link in epic_response:
