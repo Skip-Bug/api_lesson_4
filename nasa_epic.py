@@ -1,4 +1,4 @@
-from any_link.py import ensure_list, download_image
+from any_link import ensure_list, download_image
 from dotenv import load_dotenv
 from datetime import datetime
 import requests
@@ -29,12 +29,12 @@ def get_links_nasa_epic(api_key=None, date=None):
     response = requests.get(base_url, params=params)
     response.raise_for_status()
     epic_response = response.json()
-    # # отладка
-    # print(f"Найдено записей: {len(epic_response)}")
-    # if epic_response:
-    #     print("Первый элемент:")
-    #     pprint(epic_response[0])
-    # # отладка не забудь удалить
+    # отладка
+    print(f"Найдено записей: {len(epic_response)}")
+    if epic_response:
+        print("Первый элемент:")
+        pprint(epic_response[0])
+    # отладка не забудь удалить
     some_links = []
     base_photo_url = "https://api.nasa.gov/EPIC/archive/natural/"
     for epic_link in epic_response:
@@ -49,9 +49,9 @@ def get_links_nasa_epic(api_key=None, date=None):
 
 
 def main():
-        """Запускает работу с API и сохраняет фото."""
+    """Запускает работу с API и сохраняет фото."""
     load_dotenv()
-        data_input = input("Введите дату (YYYY-MM-DD) или Enter: ").strip()
+    data_input = input("Введите дату (YYYY-MM-DD) или Enter: ").strip()
     if not data_input:
         date = None
     else:
