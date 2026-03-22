@@ -1,10 +1,8 @@
-from any_link.py import ensure_list, download_image
-from dotenv import load_dotenv
+from any_link import ensure_list, download_image
 import requests
-import os
 
 
-def get_links_spacex(spacex_id):
+def get_links_spacex(spacex_id=None):
     """Получает список ссылок с SpaceX-API.
 
     Возвращает список ссылок на оригинальные фотографии запуска
@@ -16,6 +14,8 @@ def get_links_spacex(spacex_id):
     Returns:
         list: Список строк с URL изображений.
     """
+    if not spacex_id:
+        spacex_id = 'latest'
     url = f"https://api.spacexdata.com/v5/launches/{spacex_id}"
 
     response = requests.get(url)
@@ -28,9 +28,9 @@ def get_links_spacex(spacex_id):
 
 
 def main():
-        """Запускает работу с API и сохраняет фото."""
-    load_dotenv()
-    spacex_id = os.getenv('SPACEX_ID')
+    """Запускает работу с API и сохраняет фото."""
+
+    spacex_id = input("Введите ID нужного запуска или Enter: ").strip()
     name_photo = input("Введите название фото:").strip().lower()
     path = input("Введите путь или Enter:  ").strip() or 'images/'
     try:
@@ -51,7 +51,7 @@ def main():
     if not links_photo:
         print("Фотографии не найдены.")
         return
-    for number_links, link in enumerate(links_photo, start=0):
+    for number_links, link in enumerate(links_photo, start=1):
         number_photo = number_links if len(links_photo) > 1 else None
         saved_path = download_image(link, name_photo, path, number_photo)
         print(f"Файл сохранён: {saved_path}")
