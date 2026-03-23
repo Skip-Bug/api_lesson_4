@@ -17,17 +17,19 @@ def time_parser():
                         default='14400',
                         help='Задержка публикаций (по умолчанию 4 часа)'
                         )
+    parser.add_argument('-p', '--photo', help='Выбрать фото для старта')
     return parser
 
 
 def main():
-    """ Запускает Бот который опубликует изображения.
+    """ Запускает Бота который опубликует изображения.
 
-    Запускает телеграмм Бота , котрый с задержкой в 4 часа
-    или заданной пользователем опубликует изображения из папки images.
-    Когда вес изображения отправлены Бот перемешает все и начнет заного.
-    Если удалить все изображения Бот будет ждать загрузки новых файлов.
-    Ctrl+C остановит работу Бота
+    Если указан аргумент -p/--photo, сначала отправляет это фото,
+    затем переходит к бесконечному циклу отправки всех фото из папки images.
+    Не оставляйте папку images пусто больше чем на 1 час.
+    Иначе сразу работает в бесконечном цикле.
+    Задержка между отправками задаётся первым аргументом (в секундах, по умолчанию 14400).
+    Ctrl+C останавливает бота.
     """
     load_dotenv()
     images_folder = "images"
@@ -51,15 +53,21 @@ def main():
         return
     request = Request(proxy_url=proxy_url, connect_timeout=20, read_timeout=20)
     bot = Bot(token=token, request=request)
-
+    if args.photo:
+        image_path = os.path.join(images_folder, args.photo)
+        if not os.path.exists(image_path):
+            print(f"Файл {image_path} не найден")
+            return
+        with open(image_path, 'rb') as photo:
+            bot.send_photo(chat_id=channel_id, photo=photo,
+                           caption="Привет от Бота!")
     try:
         while True:
             images = os.listdir(images_folder)
             if not images:
                 print("Папка пуста")
-                time.sleep(sleep_seconds)
+                time.sleep(3600)
                 continue
-
             random.shuffle(images)
             for image_file in images:
                 image_path = os.path.join(images_folder, image_file)
