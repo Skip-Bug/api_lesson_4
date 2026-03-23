@@ -26,7 +26,6 @@ def main():
 
     Если указан аргумент -p/--photo, сначала отправляет это фото,
     затем переходит к бесконечному циклу отправки всех фото из папки images.
-    Не оставляйте папку images пусто больше чем на 1 час.
     Иначе сразу работает в бесконечном цикле.
     Задержка между отправками задаётся первым аргументом (в секундах, по умолчанию 14400).
     Ctrl+C останавливает бота.
@@ -61,6 +60,18 @@ def main():
         with open(image_path, 'rb') as photo:
             bot.send_photo(chat_id=channel_id, photo=photo,
                            caption="Привет от Бота!")
+    else:
+        all_items = os.listdir(images_folder)
+        images = [f for f in all_items if os.path.isfile(
+            os.path.join(images_folder, f))]
+        if images:
+            random_image = random.choice(images)
+            image_path = os.path.join(images_folder, random_image)
+            with open(image_path, 'rb') as img:
+                bot.send_photo(chat_id=channel_id, photo=img,
+                               caption="Привет от Бота!")
+        else:
+            print("Папка пуста, стартовое фото не отправлено.")
     try:
         while True:
             images = os.listdir(images_folder)
