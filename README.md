@@ -58,7 +58,7 @@ python nasa_epic.py
 
 ## any_link.py
 
-Сохраняет картинку по URL в указанную папку, поддерживает несколько ссылок через **,**.
+Сохраняет картинку по URL в указанную папку, поддерживает несколько ссылок через **,**.   
 <img width="1173" height="118" alt="Screenshot 2026-03-24 010953" src="https://github.com/user-attachments/assets/9c5e5ed0-6307-4f47-8fd2-5a80897015b1" />
 
 ## spacex.py
