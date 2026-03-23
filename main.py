@@ -21,24 +21,20 @@ def time_parser():
 
 
 def main():
-    """ Запускает бот который опубликует изображения.
+    """ Запускает Бот который опубликует изображения.
 
     Запускает телеграмм Бота , котрый с задержкой в 4 часа
     или заданной пользователем опубликует изображения из папки images.
     Когда вес изображения отправлены Бот перемешает все и начнет заного.
-    Если удалить все изображения бот будет ждать загрузки новых файлов.
+    Если удалить все изображения Бот будет ждать загрузки новых файлов.
     Ctrl+C остановит работу Бота
     """
     load_dotenv()
     images_folder = "images"
     channel_id = os.getenv("TG_CHANNEL_ID")
     token = os.getenv('TG_BOT_TOKEN')
-    proxy_url = os.getenv('PROXY_URL')
-    try:
-        sleep_seconds = int(args.sleep)
-    except ValueError:
-        print("Ошибка: задержка задается в секундах")
-        return
+    proxy_url = os.getenv('PROXY_URL') or None
+
     if not channel_id:
         print("Канал не обнаружен")
         return
@@ -48,6 +44,11 @@ def main():
 
     parser = time_parser()
     args = parser.parse_args()
+    try:
+        sleep_seconds = int(args.sleep)
+    except ValueError:
+        print("Ошибка: задержка задается в секундах")
+        return
     request = Request(proxy_url=proxy_url, connect_timeout=20, read_timeout=20)
     bot = Bot(token=token, request=request)
 
@@ -64,7 +65,7 @@ def main():
                 image_path = os.path.join(images_folder, image_file)
                 with open(image_path, 'rb') as image:
                     bot.send_photo(chat_id=channel_id, photo=image,
-                                   caption="Привет от бота!")
+                                   caption="Привет от Бота!")
                 time.sleep(sleep_seconds)
 
     except KeyboardInterrupt:
