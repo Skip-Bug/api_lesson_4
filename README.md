@@ -1,4 +1,4 @@
-# Telegramm BOT
+# Telegram BOT
 
 ## Что нужно сделать перед запуском
 Проверьте версию Python:
