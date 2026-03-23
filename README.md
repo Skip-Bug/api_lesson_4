@@ -86,8 +86,7 @@ python nasa_epic.py
 
 ## main.py
 
-Перед запуском работы бота
-**Запустите main.py**
+Перед запуском работы бота используйте:
 ```bash
 python main.py -h
 ```
