@@ -17,7 +17,10 @@ def main():
 
     channel_id = "@load_image"  # "-1003711383466"
 
-    bot.send_message(chat_id=channel_id, text="Привет от бота!")
+    file_path = "images/spacex_1.jpg"
+    with open(file_path, 'rb') as doc:
+        bot.send_document(chat_id=channel_id, document=doc,
+                          caption="Привет от бота!")
 
 
 if __name__ == '__main__':
