@@ -56,7 +56,7 @@ def main():
         except ValueError:
             print("Неверный формат даты. Нужно YYYY-MM-DD.")
             return
-    api_key = None  # os.getenv('NASA_ID')
+    api_key = os.getenv('NASA_ID')
     name_photo = input("Введите название фото: ").strip().lower()
     path = input("Введите путь или Enter: ").strip() or 'images/'
     try:
