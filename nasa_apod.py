@@ -104,7 +104,7 @@ def main():
         else:
             date = None
 
-    api_key = os.getenv('NASA_ID') or args.api_key
+    api_key = args.api_key or os.getenv('NASA_ID')
 
     name_photo = args.name.strip().lower() if args.name else None
     path = args.path.strip() if args.path else 'images/'
