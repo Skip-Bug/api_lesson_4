@@ -46,7 +46,7 @@ python название_файла.py -h
 
 Для начало заполните папку **images** с помощью:
 ```bash
-python img_loader.py ссылка_на_картинку [--name ИМЯ] [--path ПАПКА]
+python img_loader.py "ссылка_на_картинку" [--name ИМЯ] [--path ПАПКА]
 ```
 или
 ```bash
@@ -64,15 +64,19 @@ python nasa_epic.py api_key [-d или --date ДАТА] [--name ИМЯ] [--path 
 ## img_loader.py
 
 Сохраняет картинку по URL в указанную папку
-Нужно указать ссылку для скачивания. Также можно задать (ПАПКУ) куда скачать файл и (ИМЯ) файла.   
-<img width="1173" height="118" alt="Screenshot 2026-03-24 010953" src="https://github.com/user-attachments/assets/9c5e5ed0-6307-4f47-8fd2-5a80897015b1" />
+Нужно указать ссылку в "" для скачивания . Также можно задать (ПАПКУ) куда скачать файл и (ИМЯ) файла.   
+ИМЯ файла и расширение для него возьмет из ссылки.   
+Если в ссылке не будет этих данных укажет имя noname и расширение .jpeg
+<img width="1055" height="72" alt="Screenshot 2026-03-29 191925" src="https://github.com/user-attachments/assets/90dd68d2-65fe-4b40-90bb-9b70fb05984f" />
+
 
 ## spacex.py
 
 Получает изображения запусков SpaceX-API и сохраняет их.    
 Для скачивания нужны ID запусков. Если не вводить ID просто скачает изображения с последнего запуска(если они есть).
 Также можно задать (ПАПКУ) куда скачать файл и (ИМЯ) файла.   
-<img width="529" height="189" alt="Screenshot 2026-03-24 012343" src="https://github.com/user-attachments/assets/7368a4a9-2f73-4068-b1c9-ae463ce90035" />
+<img width="640" height="154" alt="Screenshot 2026-03-29 192432" src="https://github.com/user-attachments/assets/30912bb7-44e0-4b09-8534-4309d3a1a7ff" />
+
 
 ## nasa_apod.py
 
@@ -80,7 +84,8 @@ python nasa_epic.py api_key [-d или --date ДАТА] [--name ИМЯ] [--path 
 Для работы требуется API-ключ, но если его не указать будет использован демо ключ.   
 [КОЛИЧЕСТВО] снимков от 1 до 100, если не указать можно выбрать определенный день - [ДАТА] Дата в формате YYYY-MM-DD.   
 Также можно задать (ПАПКУ) куда скачать файл и (ИМЯ) файла.
-<img width="505" height="141" alt="Screenshot 2026-03-24 012609" src="https://github.com/user-attachments/assets/76c2f09c-d94a-48f5-b009-702c5c8b34f7" />
+<img width="1019" height="377" alt="Screenshot 2026-03-29 193702" src="https://github.com/user-attachments/assets/3a51fcb3-2587-4721-ac72-2586dd9438f2" />
+
 
 ## nasa_epic.py
 
@@ -89,7 +94,8 @@ python nasa_epic.py api_key [-d или --date ДАТА] [--name ИМЯ] [--path 
 Можно выбрать день [ДАТА] Дата в формате YYYY-MM-DD, если не выбрать день то за последнюю доступную дату   
 (обычно текущая дата, но если на сегодня ещё нет снимков, то за последний день, когда они есть).   
 Также можно задать (ПАПКУ) куда скачать файл и (ИМЯ) файла.
-<img width="496" height="98" alt="Screenshot 2026-03-24 012721" src="https://github.com/user-attachments/assets/df60237e-8123-4b59-9f31-89b75f455ae6" />
+<img width="993" height="329" alt="Screenshot 2026-03-29 193949" src="https://github.com/user-attachments/assets/dfdfc853-9ced-43a2-bda7-46f9102e1fbb" />
+
 
 ## utils
 
