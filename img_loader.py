@@ -20,7 +20,7 @@ def main():
     args = parser.parse_args()
 
     if not args.url.startswith(('http://', 'https://')):
-        print(f"Ссылка '{args.url}' должна начинаться с http:// или https://")
+        print(f'Ссылка {args.url} должна начинаться с http:// или https://')
         return
 
     name_photo = args.name.strip().lower() if args.name else None
@@ -28,16 +28,16 @@ def main():
 
     try:
         saved_path = download_image(args.url, name_photo, path)
-        print(f"Файл сохранён: {saved_path}")
+        print(f'Файл сохранён: {saved_path}')
 
     except requests.exceptions.ReadTimeout:
-        print("Превышено время ожидания...")
+        print('Превышено время ожидания...')
 
     except requests.exceptions.ConnectionError as error:
-        print(error, "Ошибка соединения")
+        print(error, 'Ошибка соединения')
 
     except requests.exceptions.HTTPError as error:
-        print(f"Ошибка HTTP: {error.response.status_code}")
+        print(f'Ошибка HTTP: {error.response.status_code}')
 
 
 if __name__ == '__main__':

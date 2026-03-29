@@ -30,7 +30,7 @@ def get_links_spacex(spacex_id):
     Returns:
         list: Список строк с URL изображений.
     """
-    url = f"https://api.spacexdata.com/v5/launches/{spacex_id}"
+    url = f'https://api.spacexdata.com/v5/launches/{spacex_id}'
 
     response = requests.get(url)
     response.raise_for_status()
@@ -54,25 +54,25 @@ def main():
         some_links = get_links_spacex(args.spacex_id)
 
     except requests.exceptions.RequestException as error:
-        print(f"Ошибка запроса к SpaceX API: {error}")
+        print(f'Ошибка запроса к SpaceX API: {error}')
         return
 
     links_photo = ensure_list(some_links)
     if not links_photo:
-        print("Фотографии не найдены.")
+        print('Фотографии не найдены.')
         return
 
     for number_links, link in enumerate(links_photo, start=1):
         number_photo = number_links if len(links_photo) > 1 else None
         try:
             saved_path = download_image(link, name_photo, path, number_photo)
-            print(f"Файл сохранён: {saved_path}")
+            print(f'Файл сохранён: {saved_path}')
         except requests.exceptions.ReadTimeout:
-            print("Превышено время ожидания...")
+            print('Превышено время ожидания...')
         except requests.exceptions.ConnectionError as error:
-            print(error, "Ошибка соединения")
+            print(error, 'Ошибка соединения')
         except requests.exceptions.HTTPError as error:
-            print(f"Ошибка HTTP: {error.response.status_code}")
+            print(f'Ошибка HTTP: {error.response.status_code}')
 
 
 if __name__ == '__main__':

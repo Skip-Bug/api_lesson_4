@@ -33,16 +33,16 @@ def main():
     Ctrl+C останавливает бота.
     """
     load_dotenv()
-    images_folder = "images"
-    channel_id = os.getenv("TG_CHANNEL_ID")
+    images_folder = 'images'
+    channel_id = os.getenv('TG_CHANNEL_ID')
     token = os.getenv('TG_BOT_TOKEN')
     proxy_url = os.getenv('PROXY_URL') or None
 
     if not channel_id:
-        print("Канал не обнаружен")
+        print('Канал не обнаружен')
         return
     if not token:
-        print(" Токен не найден в .env")
+        print(' Токен не найден в .env')
         return
 
     parser = time_parser()
@@ -51,7 +51,7 @@ def main():
     try:
         sleep_seconds = int(args.sleep)
     except ValueError:
-        print("Ошибка: задержка задается в секундах")
+        print('Ошибка: задержка задается в секундах')
         return
     request = Request(proxy_url=proxy_url, connect_timeout=20, read_timeout=20)
     bot = Bot(token=token, request=request)
@@ -59,11 +59,11 @@ def main():
     if args.photo:
         image_path = os.path.join(images_folder, args.photo)
         if not os.path.exists(image_path):
-            print(f"Файл {image_path} не найден")
+            print(f'Файл {image_path} не найден')
             return
         with open(image_path, 'rb') as photo:
             bot.send_photo(chat_id=channel_id, photo=photo,
-                           caption="Привет от Бота!")
+                           caption='Привет от Бота!')
     else:
         all_items = os.listdir(images_folder)
         images = [f for f in all_items if os.path.isfile(
@@ -73,16 +73,16 @@ def main():
             image_path = os.path.join(images_folder, random_image)
             with open(image_path, 'rb') as img:
                 bot.send_photo(chat_id=channel_id, photo=img,
-                               caption="Привет от Бота!")
+                               caption='Привет от Бота!')
         else:
             print(
-                "Папка пуста, стартовое фото не отправлено.")
+                'Папка пуста, стартовое фото не отправлено.')
 
     try:
         while True:
             images = os.listdir(images_folder)
             if not images:
-                print("Папка пуста")
+                print('Папка пуста')
                 time.sleep(3600)
                 continue
             random.shuffle(images)
@@ -90,13 +90,13 @@ def main():
                 image_path = os.path.join(images_folder, image_file)
                 with open(image_path, 'rb') as image:
                     bot.send_photo(chat_id=channel_id, photo=image,
-                                   caption="Привет от Бота!")
+                                   caption='Привет от Бота!')
                 time.sleep(sleep_seconds)
 
     except KeyboardInterrupt:
-        print("\nБот остановлен пользователем.")
+        print('\nБот остановлен пользователем.')
         bot.send_message(chat_id=channel_id,
-                         text="Бот завершил работу")
+                         text='Бот завершил работу')
 
 
 if __name__ == '__main__':

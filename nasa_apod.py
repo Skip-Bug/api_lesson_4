@@ -35,7 +35,7 @@ def get_links_nasa_apod(api_key, count=None, date=None):
     """Получает список ссылок на изображения с NASA APOD API.
 
     Args:
-        api_key (str, optional): API-ключ NASA. По умолчанию "DEMO_KEY".
+        api_key (str, optional): API-ключ NASA. По умолчанию 'DEMO_KEY'.
         count (int, optional): Количество случайных изображений (1–100).
             Если указан, возвращает список случайных фото.
         date (str, optional): Дата в формате YYYY-MM-DD.
@@ -51,7 +51,7 @@ def get_links_nasa_apod(api_key, count=None, date=None):
     if date is not None:
         params['date'] = date
 
-    base_url = "https://api.nasa.gov/planetary/apod"
+    base_url = 'https://api.nasa.gov/planetary/apod'
 
     response = requests.get(base_url, params=params)
     response.raise_for_status()
@@ -85,11 +85,11 @@ def main():
         try:
             count = int(count_input)
             if not (1 <= count <= 100):
-                print("Количество должно быть от 1 до 100.")
+                print('Количество должно быть от 1 до 100.')
                 return
             date = None
         except ValueError:
-            print(f"'{count_input}' — не число.")
+            print(f'{count_input} — не число.')
             return
     else:
         count = None
@@ -97,9 +97,9 @@ def main():
         if date_input:
             try:
                 date = datetime.strptime(
-                    date_input, "%Y-%m-%d").strftime("%Y-%m-%d")
+                    date_input, '%Y-%m-%d').strftime('%Y-%m-%d')
             except ValueError:
-                print("Неверный формат даты. Нужно YYYY-MM-DD.")
+                print('Неверный формат даты. Нужно YYYY-MM-DD.')
                 return
         else:
             date = None
@@ -114,25 +114,25 @@ def main():
         some_links = get_links_nasa_apod(api_key, count, date)
 
     except requests.exceptions.RequestException as error:
-        print(f"Ошибка запроса к NASA APOD API: {error}")
+        print(f'Ошибка запроса к NASA APOD API: {error}')
         return
 
     links_photo = ensure_list(some_links)
     if not links_photo:
-        print("Фотографии не найдены.")
+        print('Фотографии не найдены.')
         return
 
     for number_links, link in enumerate(links_photo, start=1):
         number_photo = number_links if len(links_photo) > 1 else None
         try:
             saved_path = download_image(link, name_photo, path, number_photo)
-            print(f"Файл сохранён: {saved_path}")
+            print(f'Файл сохранён: {saved_path}')
         except requests.exceptions.ReadTimeout:
-            print("Превышено время ожидания...")
+            print('Превышено время ожидания...')
         except requests.exceptions.ConnectionError as error:
-            print(error, "Ошибка соединения")
+            print(error, 'Ошибка соединения')
         except requests.exceptions.HTTPError as error:
-            print(f"Ошибка HTTP: {error.response.status_code}")
+            print(f'Ошибка HTTP: {error.response.status_code}')
 
 
 if __name__ == '__main__':

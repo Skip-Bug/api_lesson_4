@@ -40,16 +40,16 @@ def get_links_nasa_epic(api_key, date=None):
     params = {'api_key': api_key}
 
     if date:
-        base_url = f"https://api.nasa.gov/EPIC/api/natural/images/date/{date}"
+        base_url = f'https://api.nasa.gov/EPIC/api/natural/images/date/{date}'
     else:
-        base_url = "https://api.nasa.gov/EPIC/api/natural/images"
+        base_url = 'https://api.nasa.gov/EPIC/api/natural/images'
 
     response = requests.get(base_url, params=params)
     response.raise_for_status()
     epic_response = response.json()
 
     some_links = []
-    base_photo_url = "https://api.nasa.gov/EPIC/archive/natural/"
+    base_photo_url = 'https://api.nasa.gov/EPIC/archive/natural/'
     for epic_link in epic_response:
 
         date_obj = datetime.fromisoformat(epic_link['date'])
@@ -57,7 +57,7 @@ def get_links_nasa_epic(api_key, date=None):
 
         name_photo = epic_link['image']
 
-        photo_url = f"{base_photo_url}{date_str}/png/{name_photo}.png"
+        photo_url = f'{base_photo_url}{date_str}/png/{name_photo}.png'
 
         some_links.append(photo_url)
 
@@ -75,9 +75,9 @@ def main():
     if date_input:
         try:
             date = datetime.strptime(
-                date_input, "%Y-%m-%d").strftime("%Y-%m-%d")
+                date_input, '%Y-%m-%d').strftime('%Y-%m-%d')
         except ValueError:
-            print("Неверный формат даты. Нужно YYYY-MM-DD.")
+            print('Неверный формат даты. Нужно YYYY-MM-DD.')
             return
 
     api_key = os.getenv('NASA_ID') or args.api_key
@@ -90,25 +90,25 @@ def main():
         some_links = get_links_nasa_epic(api_key, date)
 
     except requests.exceptions.RequestException as error:
-        print(f"Ошибка запроса к NASA EPIC API: {error}")
+        print(f'Ошибка запроса к NASA EPIC API: {error}')
         return
 
     links_photo = ensure_list(some_links)
     if not links_photo:
-        print("Фотографии не найдены.")
+        print('Фотографии не найдены.')
         return
 
     for number_links, link in enumerate(links_photo, start=1):
         number_photo = number_links if len(links_photo) > 1 else None
         try:
             saved_path = download_image(link, name_photo, path, number_photo)
-            print(f"Файл сохранён: {saved_path}")
+            print(f'Файл сохранён: {saved_path}')
         except requests.exceptions.ReadTimeout:
-            print("Превышено время ожидания...")
+            print('Превышено время ожидания...')
         except requests.exceptions.ConnectionError as error:
-            print(error, "Ошибка соединения")
+            print(error, 'Ошибка соединения')
         except requests.exceptions.HTTPError as error:
-            print(f"Ошибка HTTP: {error.response.status_code}")
+            print(f'Ошибка HTTP: {error.response.status_code}')
 
 
 if __name__ == '__main__':

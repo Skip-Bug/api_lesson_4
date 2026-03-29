@@ -8,8 +8,8 @@ def add_common_args(parser):
     """Добавляет общие аргументы для скриптов загрузки изображений."""
     parser.add_argument(
         '-n', '--name',
-        help=("Имя файла (без расширения)."
-              "По умолчанию извлекается из URL")
+        help=('Имя файла (без расширения).'
+              'По умолчанию извлекается из URL')
     )
     parser.add_argument(
         '-p', '--path',
@@ -31,7 +31,7 @@ def get_filename(url):
     path, filename = split(unquote(urlsplit(url).path))
     name_photo, extension = splitext(filename)
     if not extension:
-        extension = ".jpeg"
+        extension = '.jpeg'
     return name_photo, extension
 
 
@@ -96,12 +96,12 @@ def download_image(
     elif name_from_url:
         final_name = name_from_url
     else:
-        final_name = "noname"
+        final_name = 'noname'
 
     if number_photo is None:
-        full_path = folder_path / f"{final_name}{extension}"
+        full_path = folder_path / f'{final_name}{extension}'
     else:
-        full_path = folder_path / f"{final_name}_{number_photo}{extension}"
+        full_path = folder_path / f'{final_name}_{number_photo}{extension}'
 
     response = requests.get(url, headers=headers)
     response.raise_for_status()
