@@ -59,28 +59,31 @@ def main():
     api_key = os.getenv('NASA_ID')
     name_photo = input("Введите название фото: ").strip().lower()
     path = input("Введите путь или Enter: ").strip() or 'images/'
+
+    some_links = None
     try:
-        some_links = get_links_nasa_epic(api_key, date)
-        links_photo = ensure_list(some_links)
-    except requests.exceptions.ReadTimeout:
-        print("Превышено время ожидания...")
+        some_links = get_links_nasa_apod(api_key, count, date, hd)
+
+    except requests.exceptions.RequestException as error:
+        print(f"Ошибка запроса к NASA EPIC API: {error}")
         return
 
-    except requests.exceptions.ConnectionError as error:
-        print(error, "Ошибка соединения")
-        return
-
-    except Exception as error:
-        print(error, "ERROR_2")
-        return
-
+    links_photo = ensure_list(some_links)
     if not links_photo:
         print("Фотографии не найдены.")
         return
-    for number_links, link in enumerate(links_photo, start=0):
+
+    for number_links, link in enumerate(links_photo, start=1):
         number_photo = number_links if len(links_photo) > 1 else None
-        saved_path = download_image(link, name_photo, path, number_photo)
-        print(f"Файл сохранён: {saved_path}")
+        try:
+            saved_path = download_image(link, name_photo, path, number_photo)
+            print(f"Файл сохранён: {saved_path}")
+        except requests.exceptions.ReadTimeout:
+            print("Превышено время ожидания...")
+        except requests.exceptions.ConnectionError as error:
+            print(error, "Ошибка соединения")
+        except requests.exceptions.HTTPError as error:
+            print(f"Ошибка HTTP: {error.response.status_code}")
 
 
 if __name__ == '__main__':

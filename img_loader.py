@@ -27,6 +27,7 @@ def main():
     try:
         saved_path = download_image(args.url, name_photo, path)
         print(f"Файл сохранён: {saved_path}")
+
     except requests.exceptions.ReadTimeout:
         print("Превышено время ожидания...")
 
