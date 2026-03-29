@@ -50,7 +50,8 @@ def get_links_nasa_epic(api_key, date=None):
     some_links = []
     base_photo_url = "https://api.nasa.gov/EPIC/archive/natural/"
     for epic_link in epic_response:
-        date_str = epic_link['date'].split()[0].replace('-', '/')
+        data_obj = datetime.fromisoformat(epic_link['date'])
+        date_str = date_obj.strftime('%Y/%m/%d')
         name_photo = epic_link['image']
 
         photo_url = f"{base_photo_url}{date_str}/png/{name_photo}.png"
