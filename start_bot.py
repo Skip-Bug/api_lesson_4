@@ -44,6 +44,7 @@ def main():
 
     parser = time_parser()
     args = parser.parse_args()
+
     try:
         sleep_seconds = int(args.sleep)
     except ValueError:
@@ -51,6 +52,7 @@ def main():
         return
     request = Request(proxy_url=proxy_url, connect_timeout=20, read_timeout=20)
     bot = Bot(token=token, request=request)
+
     if args.photo:
         image_path = os.path.join(images_folder, args.photo)
         if not os.path.exists(image_path):
@@ -71,6 +73,7 @@ def main():
                                caption="Привет от Бота!")
         else:
             print("Папка пуста, стартовое фото не отправлено.")
+
     try:
         while True:
             images = os.listdir(images_folder)
@@ -89,10 +92,6 @@ def main():
     except KeyboardInterrupt:
         print("\nБот остановлен пользователем.")
         bot.send_message(chat_id=channel_id, text="Бот завершил работу")
-
-    except Exception as exp:
-        print(f"Ошибка: {exp}")
-        bot.send_message(chat_id=channel_id, text="Я сломался")
 
 
 if __name__ == '__main__':
