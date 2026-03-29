@@ -1,11 +1,31 @@
-from utils import ensure_list, download_image
+from utils import ensure_list, download_image, add_common_args
 from dotenv import load_dotenv
 from datetime import datetime
+import argparse
 import requests
 import os
 
 
-def get_links_nasa_epic(api_key=None, date=None):
+def create_parser():
+    parser = argparse.ArgumentParser(
+        description='Запускает работу с NASA EPIC API и сохраняет фото'
+    )
+    parser.add_argument(
+        'api_key',
+        nargs='?',
+        default='DEMO_KEY',
+        help='ID NASA EPIC API (по умолчанию DEMO_KEY)'
+    )
+    parser.add_argument(
+        '-d',
+        '--date', default=None,
+        help='Введите дату (YYYY-MM-DD)'
+    )
+    add_common_args(parser)
+    return parser
+
+
+def get_links_nasa_epic(api_key, date=None):
     """Получает список ссылок на изображения с NASA EPIC API.
 
     Args:
@@ -16,9 +36,6 @@ def get_links_nasa_epic(api_key=None, date=None):
         list: Список строк с URL изображений.
             Может быть пустым, если ссылки не найдены.
     """
-    if api_key is None:
-        api_key = "DEMO_KEY"
-
     params = {'api_key': api_key}
 
     if date:
@@ -46,23 +63,27 @@ def get_links_nasa_epic(api_key=None, date=None):
 def main():
     """Запускает работу с API и сохраняет фото."""
     load_dotenv()
-    data_input = input("Введите дату (YYYY-MM-DD) или Enter: ").strip()
-    if not data_input:
-        date = None
-    else:
+    parser = create_parser()
+    args = parser.parse_args()
+
+    date_input = args.date.strip() if args.date else None
+    date = None
+    if date_input:
         try:
             date = datetime.strptime(
-                data_input, "%Y-%m-%d").strftime("%Y-%m-%d")
+                date_input, "%Y-%m-%d").strftime("%Y-%m-%d")
         except ValueError:
             print("Неверный формат даты. Нужно YYYY-MM-DD.")
             return
-    api_key = os.getenv('NASA_ID')
-    name_photo = input("Введите название фото: ").strip().lower()
-    path = input("Введите путь или Enter: ").strip() or 'images/'
+
+    api_key = os.getenv('NASA_ID') or args.api_key
+
+    name_photo = args.name.strip().lower() if args.name else None
+    path = args.path.strip() if args.path else 'images/'
 
     some_links = None
     try:
-        some_links = get_links_nasa_apod(api_key, count, date, hd)
+        some_links = get_links_nasa_epic(api_key, date)
 
     except requests.exceptions.RequestException as error:
         print(f"Ошибка запроса к NASA EPIC API: {error}")

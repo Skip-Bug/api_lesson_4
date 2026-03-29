@@ -3,31 +3,6 @@ import requests
 import argparse
 
 
-def get_links_spacex(spacex_id=None):
-    """Получает список ссылок с SpaceX-API.
-
-    Возвращает список ссылок на оригинальные фотографии запуска
-    если их нет то возвращает пустой список.
-
-    Args:
-        spacex_id (str): ID запуска, например: 5eb87d47ffd86e000604b38a.
-
-    Returns:
-        list: Список строк с URL изображений.
-    """
-    if not spacex_id:
-        spacex_id = 'latest'
-    url = f"https://api.spacexdata.com/v5/launches/{spacex_id}"
-
-    response = requests.get(url)
-    response.raise_for_status()
-
-    some_links = response.json().get('links', {}).get(
-        'flickr', {}).get('original', [])
-
-    return some_links
-
-
 def create_parser():
     parser = argparse.ArgumentParser(
         description='Запускает работу с SpaceX-API и сохраняет фото'
@@ -39,6 +14,29 @@ def create_parser():
                         )
     add_common_args(parser)
     return parser
+
+
+def get_links_spacex(spacex_id):
+    """Получает список ссылок с SpaceX-API.
+
+    Возвращает список ссылок на оригинальные фотографии запуска
+    если их нет то возвращает пустой список.
+
+    Args:
+        spacex_id (str): ID запуска, например: 5eb87d47ffd86e000604b38a.
+
+    Returns:
+        list: Список строк с URL изображений.
+    """
+    url = f"https://api.spacexdata.com/v5/launches/{spacex_id}"
+
+    response = requests.get(url)
+    response.raise_for_status()
+
+    some_links = response.json().get('links', {}).get(
+        'flickr', {}).get('original', [])
+
+    return some_links
 
 
 def main():

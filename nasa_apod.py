@@ -1,11 +1,36 @@
-from utils import ensure_list, download_image
+from utils import ensure_list, download_image, add_common_args
 from dotenv import load_dotenv
 from datetime import datetime
+import argparse
 import requests
 import os
 
 
-def get_links_nasa_apod(api_key=None, count=None, date=None, hd=False):
+def create_parser():
+    parser = argparse.ArgumentParser(
+        description='Запускает работу с NASA APOD API и сохраняет фото'
+    )
+    parser.add_argument(
+        'api_key',
+        nargs='?',
+        default='DEMO_KEY',
+        help='ID NASA APOD API (по умолчанию DEMO_KEY)'
+    )
+    parser.add_argument(
+        '-c',
+        '--count', default=None,
+        help='Введите количество (1-100)'
+    )
+    parser.add_argument(
+        '-d',
+        '--date', default=None,
+        help='Введите дату (YYYY-MM-DD)'
+    )
+    add_common_args(parser)
+    return parser
+
+
+def get_links_nasa_apod(api_key, count=None, date=None):
     """Получает список ссылок на изображения с NASA APOD API.
 
     Args:
@@ -14,23 +39,16 @@ def get_links_nasa_apod(api_key=None, count=None, date=None, hd=False):
             Если указан, возвращает список случайных фото.
         date (str, optional): Дата в формате YYYY-MM-DD.
             Нельзя использовать вместе с count.
-        hd (bool, optional): Если True, предпочитает HD-версию hdurl,
-            но использует url как запасной вариант.
 
     Returns:
         list: Список строк с URL изображений.
             Может быть пустым, если ссылки не найдены.
     """
-    if api_key is None:
-        api_key = "DEMO_KEY"
-
     params = {'api_key': api_key}
     if count is not None:
         params['count'] = count
     if date is not None:
         params['date'] = date
-    if hd:
-        params['hd'] = True
 
     base_url = "https://api.nasa.gov/planetary/apod"
 
@@ -49,11 +67,7 @@ def get_links_nasa_apod(api_key=None, count=None, date=None, hd=False):
         if apod_link.get('media_type') != 'image':
             continue
 
-        if hd:
-            some_link = apod_link.get('hdurl') or apod_link.get('url')
-        else:
-            some_link = apod_link.get('url')
-
+        some_link = apod_link.get('url')
         if some_link:
             some_links.append(some_link)
     return some_links
@@ -63,7 +77,10 @@ def main():
     """Запускает работу с API и сохраняет фото."""
 
     load_dotenv()
-    count_input = input("Введите количество (1-100) или Enter: ").strip()
+    parser = create_parser()
+    args = parser.parse_args()
+
+    count_input = args.count.strip() if args.count else None
     if count_input:
         try:
             count = int(count_input)
@@ -72,11 +89,11 @@ def main():
                 return
             date = None
         except ValueError:
-            print("Неверное число.")
+            print(f"'{count_input}' — не число.")
             return
     else:
         count = None
-        date_input = input("Введите дату (YYYY-MM-DD) или Enter: ").strip()
+        date_input = args.date.strip() if args.date else None
         if date_input:
             try:
                 date = datetime.strptime(
@@ -87,17 +104,14 @@ def main():
         else:
             date = None
 
-    hd_input = input("HD-версия? (y/n): ").strip().lower()
-    hd = hd_input == 'y'
+    api_key = os.getenv('NASA_ID') or args.api_key
 
-    api_key = os.getenv('NASA_ID')
-
-    name_photo = input("Введите название фото: ").strip().lower()
-    path = input("Введите путь или Enter: ").strip() or 'images/'
+    name_photo = args.name.strip().lower() if args.name else None
+    path = args.path.strip() if args.path else 'images/'
 
     some_links = None
     try:
-        some_links = get_links_nasa_apod(api_key, count, date, hd)
+        some_links = get_links_nasa_apod(api_key, count, date)
 
     except requests.exceptions.RequestException as error:
         print(f"Ошибка запроса к NASA APOD API: {error}")
