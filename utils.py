@@ -1,7 +1,6 @@
 from pathlib import Path
 from os.path import split, splitext
 from urllib.parse import urlsplit, unquote
-import argparse
 import requests
 
 
@@ -21,7 +20,7 @@ def add_common_args(parser):
 
 
 def get_filename(url):
-    """Берет из ссылок расширение... 
+    """Берет из ссылок расширение...
 
     Args:
         url (str): Адрес картинки в интернете.

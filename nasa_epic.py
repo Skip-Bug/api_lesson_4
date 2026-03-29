@@ -7,6 +7,7 @@ import os
 
 
 def create_parser():
+    """Добавляет аргументы для скрипта."""
     parser = argparse.ArgumentParser(
         description='Запускает работу с NASA EPIC API и сохраняет фото'
     )
@@ -50,8 +51,10 @@ def get_links_nasa_epic(api_key, date=None):
     some_links = []
     base_photo_url = "https://api.nasa.gov/EPIC/archive/natural/"
     for epic_link in epic_response:
-        data_obj = datetime.fromisoformat(epic_link['date'])
+
+        date_obj = datetime.fromisoformat(epic_link['date'])
         date_str = date_obj.strftime('%Y/%m/%d')
+
         name_photo = epic_link['image']
 
         photo_url = f"{base_photo_url}{date_str}/png/{name_photo}.png"

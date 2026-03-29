@@ -7,6 +7,7 @@ import os
 
 
 def create_parser():
+    """Добавляет аргументы для скрипта."""
     parser = argparse.ArgumentParser(
         description='Запускает работу с NASA APOD API и сохраняет фото'
     )
@@ -75,7 +76,6 @@ def get_links_nasa_apod(api_key, count=None, date=None):
 
 def main():
     """Запускает работу с API и сохраняет фото."""
-
     load_dotenv()
     parser = create_parser()
     args = parser.parse_args()

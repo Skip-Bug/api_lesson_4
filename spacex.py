@@ -4,14 +4,16 @@ import argparse
 
 
 def create_parser():
+    """Добавляет аргументы для скрипта."""
     parser = argparse.ArgumentParser(
         description='Запускает работу с SpaceX-API и сохраняет фото'
     )
-    parser.add_argument('spacex_id',
-                        nargs='?',
-                        default='latest',
-                        help='ID запуска (по умолчанию последний)'
-                        )
+    parser.add_argument(
+        'spacex_id',
+        nargs='?',
+        default='latest',
+        help='ID запуска (по умолчанию последний)'
+    )
     add_common_args(parser)
     return parser
 

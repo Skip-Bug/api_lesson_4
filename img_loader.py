@@ -5,8 +5,10 @@ import argparse
 
 
 def create_parser():
+    """Добавляет аргументы для скрипта."""
     parser = argparse.ArgumentParser(
-        description='Скачивание изображения по ссылке.')
+        description='Скачивание изображения по ссылке.'
+    )
     parser.add_argument('url', help='Ссылка на изображение')
     add_common_args(parser)
     return parser
