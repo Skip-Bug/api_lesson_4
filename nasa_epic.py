@@ -1,4 +1,4 @@
-from any_link import ensure_list, download_image
+from utils import ensure_list, download_image
 from dotenv import load_dotenv
 from datetime import datetime
 import requests

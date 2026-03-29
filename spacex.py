@@ -1,4 +1,4 @@
-from any_link import ensure_list, download_image
+from utils import ensure_list, download_image
 import requests
 import argparse
 
